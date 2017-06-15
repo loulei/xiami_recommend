@@ -5,7 +5,6 @@ import urllib2
 import urllib
 import cookielib
 import json
-from zhuaxia.downloader import download
 
 url_login="https://login.xiami.com/member/login"
 AGENT= 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36'
