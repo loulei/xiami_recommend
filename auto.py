@@ -5,6 +5,9 @@ import urllib2
 import urllib
 import cookielib
 import json
+import requests
+import time
+import os.path
 
 url_login="https://login.xiami.com/member/login"
 AGENT= 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36'
@@ -12,14 +15,23 @@ headers = {'User-Agent':AGENT}
 cj = cookielib.CookieJar()
 url_recommend="http://www.xiami.com/song/playlist/id/1/type/9/cat/json"
 url_mess = 'http://www.xiami.com/song/playlist/id/%s/type/0/cat/json'
-local_download_path = '/home/loulei/netdisk/xiami/'
-email='XXXXXXX@qq.com'
-password='XXXXX'
+local_download_path = '/home/loulei/netdisk/test/'
+email=''
+password=''
 
 def init():
+    global email, password
     print "init"
+    f = open("account")
+    email = f.readline()
+    password = f.readline()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
+    print 'create dir:', local_download_path
+    if os.path.isdir(local_download_path):
+        pass
+    else:
+        os.mkdir(local_download_path)
 
 def login():
     print "start login"
@@ -80,9 +92,11 @@ def parseSongs(jsonStr):
         print download_url
         print'------------------------------------------------------------------------------------------------------------------------'
         download(songname, download_url)
+#         download_with_timeout(songname, download_url, 60)
         
         
 def download(songname, url):
+    songname = songname.replace(u"/", " ")
     localfile=local_download_path+songname+".mp3"
     print "download ", songname, ' from ', url, ' to ', localfile
     request = urllib2.Request(url)
@@ -90,6 +104,27 @@ def download(songname, url):
     data = response.read()
     with open(localfile, "wb") as code:
         code.write(data)
+        
+# class TooSlowException(Exception):
+#     print 'TooSlowException happen'
+#         
+# def download_with_timeout(songname, url, timeout):
+#     print 'download_with_timeout'
+#     startTime = time.time()
+#     localfile = local_download_path+songname+'.mp3'
+#     f = open(localfile, 'wb')
+#     request = requests.get(url, stream=True)
+#     for chunk in request.iter_content(chunk_size=65536):
+#         if chunk:
+#             nowTime = time.time()
+#             if (nowTime - startTime > timeout):
+#                 raise TooSlowException
+#             startTime = nowTime
+#             f.write(chunk)
+#             f.flush()
+#     f.close()
+                
+            
 
 if __name__ == '__main__':
     print "auto download daily music"
@@ -97,3 +132,19 @@ if __name__ == '__main__':
     login()
     jsonStr = getRecommend()
     parseSongs(jsonStr)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
