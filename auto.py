@@ -15,23 +15,26 @@ headers = {'User-Agent':AGENT}
 cj = cookielib.CookieJar()
 url_recommend="http://www.xiami.com/song/playlist/id/1/type/9/cat/json"
 url_mess = 'http://www.xiami.com/song/playlist/id/%s/type/0/cat/json'
-local_download_path = '/home/loulei/netdisk/test/'
+local_download_path = ''
 email=''
 password=''
 
 def init():
-    global email, password
+    global email, password,local_download_path
     print "init"
     f = open("account")
-    email = f.readline()
-    password = f.readline()
+    email = f.readline().strip()
+    password = f.readline().strip()
+    local_download_path = f.readline()
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
+    currentDay = time.strftime("%Y-%m-%d", time.localtime())
+    local_download_path = local_download_path + currentDay + '/'
     print 'create dir:', local_download_path
     if os.path.isdir(local_download_path):
         pass
     else:
-        os.mkdir(local_download_path)
+        os.makedirs(local_download_path)
 
 def login():
     print "start login"
@@ -75,7 +78,7 @@ def decode_xiami_link(mess):
     return urllib.unquote(durl).replace('^', '0')
     
 def parseSongs(jsonStr):
-    print 'parse songs', jsonStr
+#     print 'parse songs', jsonStr
     songs = json.loads(jsonStr)
     print type(songs['data']['trackList'])
     for song in songs['data']['trackList']:
